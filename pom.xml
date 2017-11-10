@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.kineticdata.bridges.adapter</groupId>
-    <artifactId>kinetic-bridgehub-adapter-servicenow</artifactId>
+    <artifactId>kinetic-bridgehub-adapter-resttemplate</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>kinetic-bridgehub-adapter-servicenow</name>
+    <name>kinetic-bridgehub-adapter-resttemplate</name>
     <scm>
-        <connection>scm:git:https://github.com/kineticcommunity/kinetic-bridgehub-adapter-servicenow.git</connection>
-        <developerConnection>scm:git:https://github.com/kineticcommunity/kinetic-bridgehub-adapter-servicenow.git</developerConnection>
+        <connection>scm:git:https://github.com/kineticcommunity/kinetic-bridgehub-adapter-resttemplate.git</connection>
+        <developerConnection>scm:git:https://github.com/kineticcommunity/kinetic-bridgehub-adapter-resttemplate.git</developerConnection>
     </scm>
 
     <repositories>
