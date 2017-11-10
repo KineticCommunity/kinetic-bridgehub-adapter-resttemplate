@@ -20,7 +20,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -33,10 +33,10 @@ public class RestTemplateAdapter implements BridgeAdapter {
     /*----------------------------------------------------------------------------------------------
      * PROPERTIES
      *--------------------------------------------------------------------------------------------*/
-    
+
     /** Defines the adapter display name */
     public static final String NAME = "Rest Template Bridge";
-    
+
     /** Defines the logger */
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(RestTemplateAdapter.class);
 
@@ -52,7 +52,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
         public static final String USERNAME = "Username";
         public static final String PASSWORD = "Password";
     }
-    
+
     private final ConfigurablePropertyMap properties = new ConfigurablePropertyMap(
         new ConfigurableProperty(Properties.USERNAME).setIsRequired(true),
         new ConfigurableProperty(Properties.PASSWORD).setIsRequired(true).setIsSensitive(true)
@@ -64,11 +64,11 @@ public class RestTemplateAdapter implements BridgeAdapter {
     public static final List<String> VALID_STRUCTURES = Arrays.asList(new String[] {
         "FirstStructure","SecondStructure"
     });
-    
+
     /*---------------------------------------------------------------------------------------------
      * SETUP METHODS
      *-------------------------------------------------------------------------------------------*/
-    
+
     @Override
     public void initialize() throws BridgeError {
         this.username = properties.getValue(Properties.USERNAME);
@@ -81,22 +81,22 @@ public class RestTemplateAdapter implements BridgeAdapter {
     public String getName() {
         return NAME;
     }
-    
+
     @Override
     public String getVersion() {
         return VERSION;
     }
-    
+
     @Override
     public void setProperties(Map<String,String> parameters) {
         properties.setValues(parameters);
     }
-    
+
     @Override
     public ConfigurablePropertyMap getProperties() {
         return properties;
     }
-    
+
     /*---------------------------------------------------------------------------------------------
      * IMPLEMENTATION METHODS
      *-------------------------------------------------------------------------------------------*/
@@ -119,7 +119,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
         String url = this.restEndpoint+"/path/to/count/endpoint?query="+escapeQuery(query);
 
         // Initialize the HTTP Client, Response, and Get objects.
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = HttpClients.createDefault();
         HttpResponse response;
         HttpGet get = new HttpGet(url);
 
@@ -140,7 +140,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
             throw new BridgeError("Unable to make a connection to the REST Service");
         }
         logger.trace("REST Service Count - Raw Output: "+output);
-        
+
         // Parse the Response String into a JSON Object
         JSONObject json = (JSONObject)JSONValue.parse(output);
         // Get the count value from the response object
@@ -167,7 +167,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
 
         // Build up the url that you will use to retrieve the source data. Use the query variable
         // instead of request.getQuery() to get a query without parameter placeholders. If the query
-        // contains an id that needs to be on the url path, retrieve it from the query and then 
+        // contains an id that needs to be on the url path, retrieve it from the query and then
         // append it to the url as a path object.
         String recordId = null;
         // Retrieve a recordId from the query. Assumes the id is passed in the form of id=1234abcd
@@ -180,7 +180,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
         String url = this.restEndpoint+"/path/to/retrieve/record/"+recordId;
 
         // Initialize the HTTP Client, Response, and Get objects.
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = HttpClients.createDefault();
         HttpResponse response;
         HttpGet get = new HttpGet(url);
 
@@ -201,7 +201,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
             throw new BridgeError("Unable to make a connection to the REST Service");
         }
         logger.trace("Rest Service Retrieve - Raw Output: "+output);
-        
+
         // Parse the Response String into a JSON Object
         JSONObject json = (JSONObject)JSONValue.parse(output);
         // Retrieve the record that was returned
@@ -228,7 +228,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
         String url = this.restEndpoint+"/path/to/search/records?"+escapeQuery(query);
 
         // Initialize the HTTP Client, Response, and Get objects.
-        HttpClient client = new DefaultHttpClient();
+        HttpClient client = HttpClients.createDefault();
         HttpResponse response;
         HttpGet get = new HttpGet(url);
 
@@ -249,9 +249,9 @@ public class RestTemplateAdapter implements BridgeAdapter {
             throw new BridgeError("Unable to make a connection to the REST Service");
         }
         logger.trace("Rest Service Search - Raw Output: "+output);
-        
+
         // Option #1: JSON Parsing
-        
+
         // Parse the Response String into a JSON Object
         JSONObject json = (JSONObject)JSONValue.parse(output);
         // Get an array of objects from the parsed json
@@ -265,7 +265,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
             recordList.add(new Record(jsonObject));
         }
         // Create the metadata that needs to be returned.
-        Map<String,String> metadata = new LinkedHashMap<String,String>();        
+        Map<String,String> metadata = new LinkedHashMap<String,String>();
         metadata.put("count",String.valueOf(records.size()));
         metadata.put("size", String.valueOf(records.size()));
 
@@ -275,13 +275,13 @@ public class RestTemplateAdapter implements BridgeAdapter {
     /*----------------------------------------------------------------------------------------------
      * PRIVATE HELPER METHODS
      *--------------------------------------------------------------------------------------------*/
-    
+
     private void testAuthenticationValues(String restEndpoint, String username, String password) throws BridgeError {
         logger.debug("Testing the authentication credentials");
         HttpGet get = new HttpGet(String.format("%s/path/to/authentication/check",restEndpoint));
         get = addBasicAuthenticationHeader(get, this.username, this.password);
 
-        DefaultHttpClient client = new DefaultHttpClient();
+        HttpClient client = HttpClients.createDefault();
         HttpResponse response;
         try {
             response = client.execute(get);
@@ -293,7 +293,7 @@ public class RestTemplateAdapter implements BridgeAdapter {
         }
         catch (IOException e) {
             logger.error(e.getMessage());
-            throw new BridgeError("Unable to make a connection to properly to the Rest Service."); 
+            throw new BridgeError("Unable to make a connection to properly to the Rest Service.");
         }
     }
 
